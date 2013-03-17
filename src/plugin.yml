@@ -1,0 +1,13 @@
+name: RMCT Coachhelper
+main: com.gmail.imustek.oha.jake
+version: 0.4.0
+depend: [WorldGuard]
+commands:
+  c:
+    description: General command for RMCT tools
+    usage: /c regions || /c region <region> || /c tp <from> <to>
+    permission: coachhelper.coach
+  cb:
+    description: Send a colored message? 
+    usage: /cb <message>
+  
