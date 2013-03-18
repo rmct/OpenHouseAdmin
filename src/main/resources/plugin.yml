@@ -1,0 +1,12 @@
+name: OpenHouseAdmin
+main: org.mctourney.openhouse.OpenHouseAdmin
+version: 0.4.0
+
+depend: [WorldGuard]
+
+commands:
+  openhouse:
+    aliases: [oh, coach, c]
+    description: General command for RMCT tools
+    usage: /<command> ...
+    permission: openhouse.coach
