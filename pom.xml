@@ -18,6 +18,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <bukkit.version>1.4.7-R1.0</bukkit.version>
     <java.target.version>1.6</java.target.version>
+    <autoreferee.version>2.1</autoreferee.version>
   </properties>
 
   <scm>
@@ -41,18 +42,6 @@
     <!-- Required component -->
     <dependency>
       <groupId>com.sk89q</groupId>
-      <artifactId>worldguard</artifactId>
-      <version>5.3</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.spout</groupId>
-          <artifactId>spoutapi</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>com.sk89q</groupId>
       <artifactId>worldedit</artifactId>
       <version>5.3</version>
       <exclusions>
@@ -68,6 +57,12 @@
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
       <version>${bukkit.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mctourney.autoreferee</groupId>
+      <artifactId>AutoReferee</artifactId>
+      <version>${autoreferee.version}</version>
     </dependency>
 
     <dependency>

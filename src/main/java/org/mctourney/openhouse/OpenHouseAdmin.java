@@ -1,14 +1,16 @@
 package org.mctourney.openhouse;
 
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.managers.RegionManager;
-
+import com.google.common.collect.Maps;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import org.mctourney.autoreferee.regions.AutoRefRegion;
 import org.mctourney.openhouse.commands.CoachCommands;
 import org.mctourney.openhouse.util.commands.CommandManager;
+
+import java.util.Map;
 
 /**
  * @author Mustek
@@ -42,14 +44,7 @@ public class OpenHouseAdmin extends JavaPlugin
 		getLogger().info(this.getDescription().getFullName() + " is disabled");
 	}
 
-	// return the WG region manager
-	public RegionManager getRegionManager()
-	{
-		WorldGuardPlugin wg = getWorldGuard();
-		
-		if (wg == null) return null;
-		return wg.getRegionManager(getLobbyWorld());
-	}
+	public Map<String, AutoRefRegion> regions = Maps.newHashMap();
 
 	public World getLobbyWorld()
 	{
@@ -57,12 +52,12 @@ public class OpenHouseAdmin extends JavaPlugin
 	}
 
 	// import Worldguard
-	public WorldGuardPlugin getWorldGuard()
+	public WorldEditPlugin getWorldEdit()
 	{
-		Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
+		Plugin plugin = getServer().getPluginManager().getPlugin("WorldEdit");
 
-		if (plugin == null || !(plugin instanceof WorldGuardPlugin)) { return null; }
+		if (plugin == null || !(plugin instanceof WorldEditPlugin)) { return null; }
 
-		return (WorldGuardPlugin) plugin;
+		return (WorldEditPlugin) plugin;
 	}
 }

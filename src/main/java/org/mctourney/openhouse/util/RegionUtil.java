@@ -7,13 +7,12 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+
+import org.mctourney.autoreferee.regions.AutoRefRegion;
+import org.mctourney.autoreferee.regions.CuboidRegion;
 import org.mctourney.openhouse.OpenHouseAdmin;
 
 import com.google.common.collect.Sets;
-
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-
 
 /**
  * @author Mustek
@@ -21,33 +20,25 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
  */
 public class RegionUtil
 {
-	public static Set<Player> getPlayersRegion(ProtectedRegion region)
+	public static Set<Player> getPlayersRegion(AutoRefRegion region)
 	{
-		// Get points of the region
-		BlockVector min = region.getMinimumPoint();
-		BlockVector max = region.getMaximumPoint();
-
 		// Iterate through players to see if they match the region
 		Set<Player> players = Sets.newHashSet();
 
 		for (Player onPlayer : Bukkit.getOnlinePlayers())
-			if (onPlayer.getGameMode() == GameMode.ADVENTURE)
-			{
-				Location playerLoc = onPlayer.getLocation();
-				if (playerLoc.getX() >= min.getBlockX() && playerLoc.getX() <= max.getBlockX() + 1)
-					if (playerLoc.getZ() >= min.getBlockZ() && playerLoc.getZ() <= max.getBlockZ() + 1)
-						players.add(onPlayer);
-			}
+			if (onPlayer.getGameMode() == GameMode.ADVENTURE && region.contains(onPlayer.getLocation()))
+				players.add(onPlayer);
 
 		return players;
 	}
 
 	// Calculate the center of a region and return the location
-	public static Location getRegionCenter(ProtectedRegion region)
+	public static Location getRegionCenter(AutoRefRegion region)
 	{
 		// Get points of the region
-		BlockVector min = region.getMinimumPoint();
-		BlockVector max = region.getMaximumPoint();
+		CuboidRegion cuboid = region.getBoundingCuboid();
+		Location min = cuboid.getMinimumPoint();
+		Location max = cuboid.getMaximumPoint();
 		World world = OpenHouseAdmin.getInstance().getLobbyWorld();
 
 		double pointX = (min.getBlockX() + max.getBlockX()) / 2.0;
