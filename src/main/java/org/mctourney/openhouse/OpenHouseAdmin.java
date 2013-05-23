@@ -44,14 +44,14 @@ public class OpenHouseAdmin extends JavaPlugin
 		commandManager = new CommandManager();
 		commandManager.registerCommands(new CoachCommands(this), this);
 
-		loadRegions();
+		if (getLobbyWorld() != null) loadRegions();
 		getLogger().info(this.getDescription().getFullName() + " is enabled");
 	}
 
 	@Override
 	public void onDisable()
 	{
-		saveRegions();
+		if (getLobbyWorld() != null) saveRegions();
 		getLogger().info(this.getDescription().getFullName() + " is disabled");
 	}
 
