@@ -5,18 +5,21 @@ import java.util.Set;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
 import com.sk89q.worldedit.bukkit.selections.Selection;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
 import org.mctourney.autoreferee.regions.AutoRefRegion;
 import org.mctourney.autoreferee.regions.CuboidRegion;
+import org.mctourney.autoreferee.util.commands.AutoRefCommand;
+import org.mctourney.autoreferee.util.commands.AutoRefPermission;
+import org.mctourney.autoreferee.util.commands.CommandHandler;
 import org.mctourney.openhouse.OpenHouseAdmin;
+import org.mctourney.openhouse.RegionData;
 import org.mctourney.openhouse.util.RegionUtil;
-import org.mctourney.openhouse.util.commands.CommandHandler;
-import org.mctourney.openhouse.util.commands.OpenHouseCommand;
-import org.mctourney.openhouse.util.commands.OpenHousePermission;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang.StringUtils;
@@ -30,17 +33,38 @@ import com.google.common.collect.Sets;
 public class CoachCommands implements CommandHandler
 {
 	private OpenHouseAdmin plugin;
-	
+
 	public CoachCommands(OpenHouseAdmin plugin)
 	{
 		this.plugin = plugin;
 	}
 
-	@OpenHouseCommand(name={"openhouse", "tp"}, argmin=2, argmax=2,
-		description="Teleport all users within a region to another region.")
-	@OpenHousePermission(console=false, nodes={"openhouse.coach"})
+	@AutoRefCommand(name={"openhouse", "tp"}, argmin=1, argmax=1,
+		description="Teleport to the named region.")
+	@AutoRefPermission(console=false, nodes={"openhouse.coach"})
 
 	public boolean teleport(CommandSender sender, World match, String[] args, CommandLine options)
+	{
+		AutoRefRegion regionTo;
+		String regionToName = args[0].toUpperCase();
+
+		if (plugin.regions.containsKey(regionToName))
+			regionTo = plugin.regions.get(regionToName).region;
+		else
+		{
+			sender.sendMessage(ChatColor.RED + "Region " + regionToName + " does not exist.");
+			return true;
+		}
+
+		((Player) sender).teleport(RegionUtil.getRegionCenter(regionTo));
+		return true;
+	}
+
+	@AutoRefCommand(name={"openhouse", "transfer"}, argmin=2, argmax=2,
+		description="Teleport all users within a region to another region.")
+	@AutoRefPermission(console=false, nodes={"openhouse.coach"})
+
+	public boolean transfer(CommandSender sender, World match, String[] args, CommandLine options)
 	{
 		AutoRefRegion regionFrom, regionTo;
 
@@ -48,7 +72,7 @@ public class CoachCommands implements CommandHandler
 		String regionToName = args[1].toUpperCase();
 
 		if (plugin.regions.containsKey(regionFromName))
-			regionFrom = plugin.regions.get(regionFromName);
+			regionFrom = plugin.regions.get(regionFromName).region;
 		else
 		{
 			sender.sendMessage(ChatColor.RED + "Region " + regionFromName + " does not exist.");
@@ -56,7 +80,7 @@ public class CoachCommands implements CommandHandler
 		}
 
 		if (plugin.regions.containsKey(regionToName))
-			regionTo = plugin.regions.get(regionToName);
+			regionTo = plugin.regions.get(regionToName).region;
 		else
 		{
 			sender.sendMessage(ChatColor.RED + "Region " + regionToName + " does not exist.");
@@ -72,37 +96,37 @@ public class CoachCommands implements CommandHandler
 
 		sender.sendMessage(ChatColor.GREEN + "Players have been teleported from " +
 				regionFromName + " to " + regionToName + ".");
-		
+
 		return true;
 	}
 
-	@OpenHouseCommand(name={"openhouse", "regions"}, argmax=0,
+	@AutoRefCommand(name={"openhouse", "regions"}, argmax=0,
 		description="List all available regions.")
-	@OpenHousePermission(console=true, nodes={"openhouse.coach"})
+	@AutoRefPermission(console=true, nodes={"openhouse.coach"})
 
 	public boolean listRegions(CommandSender sender, World match, String[] args, CommandLine options)
 	{
 		Set<String> regionNames = Sets.newHashSet();
-		
+
 		for (String regname : plugin.regions.keySet())
 			regionNames.add(regname.toUpperCase());
 
-		sender.sendMessage(ChatColor.GREEN + "Available Regions: " + 
+		sender.sendMessage(ChatColor.GREEN + "Available Regions: " +
 			ChatColor.WHITE + StringUtils.join(regionNames, ", "));
-		
+
 		return true;
 	}
 
-	@OpenHouseCommand(name={"openhouse", "region"}, argmin=1, argmax=1,
+	@AutoRefCommand(name={"openhouse", "region"}, argmin=1, argmax=1,
 			description="Find out the number of players inside a given region.")
-	@OpenHousePermission(console=true, nodes={"openhouse.coach"})
+	@AutoRefPermission(console=true, nodes={"openhouse.coach"})
 
 	public boolean describeRegion(CommandSender sender, World match, String[] args, CommandLine options)
 	{
 		try
 		{
 			String regionName = args[0].toUpperCase();
-			AutoRefRegion region = plugin.regions.get(regionName);
+			AutoRefRegion region = plugin.regions.get(regionName).region;
 			Set<String> names = Sets.newHashSet();
 
 			for (Player onPlayer : RegionUtil.getPlayersRegion(region))
@@ -119,9 +143,9 @@ public class CoachCommands implements CommandHandler
 		return true;
 	}
 
-	@OpenHouseCommand(name={"openhouse", "defregion"}, argmin=1, argmax=1,
+	@AutoRefCommand(name={"openhouse", "defregion"}, argmin=1, argmax=1, options="g+",
 			description="Create a new region.")
-	@OpenHousePermission(console=false, nodes={"openhouse.coach"})
+	@AutoRefPermission(console=false, nodes={"openhouse.coach"})
 
 	public boolean defineRegion(CommandSender sender, World match, String[] args, CommandLine options)
 	{
@@ -148,15 +172,21 @@ public class CoachCommands implements CommandHandler
 		String regionName = args[0].toUpperCase();
 		if (reg != null)
 		{
-			plugin.regions.put(regionName, reg);
+			reg.setName(regionName);
+			RegionData rdata = new RegionData(reg);
+
+			if (options.hasOption('g'))
+				rdata.permissions.add("openhouse.group." + options.getOptionValue('g'));
+
+			plugin.regions.put(regionName, rdata);
 			sender.sendMessage(regionName + " is now " + reg);
 		}
 		return true;
 	}
 
-	@OpenHouseCommand(name={"openhouse", "bring"}, argmin=1, argmax=1,
+	@AutoRefCommand(name={"openhouse", "bring"}, argmin=1, argmax=1,
 		description="Teleport all users within a region to you.")
-	@OpenHousePermission(console=false, nodes={"openhouse.coach"})
+	@AutoRefPermission(console=false, nodes={"openhouse.coach"})
 
 	public boolean bringPlayers(CommandSender sender, World match, String[] args, CommandLine options)
 	{
@@ -165,7 +195,7 @@ public class CoachCommands implements CommandHandler
 
 		String regionName = args[0].toUpperCase();
 		if (plugin.regions.containsKey(regionName))
-			regionFrom = plugin.regions.get(regionName);
+			regionFrom = plugin.regions.get(regionName).region;
 		else
 		{
 			sender.sendMessage(ChatColor.RED + "Region " + regionName + " does not exist.");
@@ -180,7 +210,7 @@ public class CoachCommands implements CommandHandler
 		}
 
 		sender.sendMessage(ChatColor.GREEN + "Players have been teleported from " + regionName + ".");
-		
+
 		return true;
 	}
 }

@@ -10,7 +10,23 @@ softdepend:
 
 commands:
   openhouse:
-    aliases: [oh, coach, c]
-    description: General command for RMCT tools
+    aliases: [oh, oha, coach, c]
+    description: General command for Open House tools
     usage: /<command> ...
     permission: openhouse.coach
+
+permissions:
+  openhouse.*:
+    default: op
+    children:
+      openhouse.admin: true
+  openhouse.admin:
+    default: false
+    children:
+      openhouse.coach: true
+  openhouse.streamer:
+    default: false
+  openhouse.coach:
+    default: false
+  openhouse.group.*:
+    default: false
