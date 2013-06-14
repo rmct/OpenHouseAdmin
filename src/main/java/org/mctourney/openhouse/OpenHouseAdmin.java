@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -16,8 +17,10 @@ import org.mctourney.autoreferee.AutoReferee;
 import org.mctourney.autoreferee.regions.AutoRefRegion;
 import org.mctourney.autoreferee.util.LocationUtil;
 import org.mctourney.autoreferee.util.commands.CommandManager;
+import org.mctourney.openhouse.commands.AdminCommands;
 import org.mctourney.openhouse.commands.CoachCommands;
 import org.mctourney.openhouse.listeners.LobbyListener;
+
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
@@ -29,6 +32,7 @@ import com.google.common.collect.Maps;
 
 /**
  * @author Mustek
+ * @author authorblues
  */
 public class OpenHouseAdmin extends JavaPlugin
 {
@@ -49,6 +53,7 @@ public class OpenHouseAdmin extends JavaPlugin
 
 		// user interface commands in a custom command manager
 		CommandManager cmdmanager = AutoReferee.getInstance().getCommandManager();
+		cmdmanager.registerCommands(new AdminCommands(this), this);
 		cmdmanager.registerCommands(new CoachCommands(this), this);
 
 		PluginManager manager = Bukkit.getPluginManager();

@@ -6,8 +6,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
-import org.bukkit.scheduler.BukkitRunnable;
-
 import org.mctourney.autoreferee.regions.AutoRefRegion;
 import org.mctourney.openhouse.util.RegionUtil;
 
@@ -27,20 +25,13 @@ public class RegionData
 	// any permissions necessary to join this region
 	public Set<String> permissions = Sets.newHashSet();
 
+	// coach who has claimed this region (not permanent)
+	public String claimant = null;
+
 	// is this region open or closed
 	public boolean open = true;
 
 	private long lastAnnouncementFull = 0L;
-
-	private class SizeAnnounceTask extends BukkitRunnable
-	{
-		public static final double THRESHOLD = 0.75;
-
-		@Override
-		public void run()
-		{
-		}
-	}
 
 	public RegionData(AutoRefRegion reg)
 	{ this.region = reg; }

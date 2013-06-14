@@ -10,8 +10,13 @@ softdepend:
 
 commands:
   openhouse:
-    aliases: [oh, oha, coach, c]
-    description: General command for Open House tools
+    aliases: [oh, oha]
+    description: Admin commands for Open House tools
+    usage: /<command> ...
+    permission: openhouse.admin
+  coach:
+    aliases: [c]
+    description: Coach commands for Open House tools
     usage: /<command> ...
     permission: openhouse.coach
 

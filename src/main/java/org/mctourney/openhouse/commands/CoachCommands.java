@@ -2,10 +2,6 @@ package org.mctourney.openhouse.commands;
 
 import java.util.Set;
 
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
-import com.sk89q.worldedit.bukkit.selections.Selection;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -13,7 +9,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import org.mctourney.autoreferee.regions.AutoRefRegion;
-import org.mctourney.autoreferee.regions.CuboidRegion;
 import org.mctourney.autoreferee.util.commands.AutoRefCommand;
 import org.mctourney.autoreferee.util.commands.AutoRefPermission;
 import org.mctourney.autoreferee.util.commands.CommandHandler;
@@ -60,19 +55,19 @@ public class CoachCommands implements CommandHandler
 		return true;
 	}
 
-	@AutoRefCommand(name={"openhouse", "transfer"}, argmin=2, argmax=2,
+	@AutoRefCommand(name={"openhouse", "transfer"}, argmin=2, argmax=2, options="f",
 		description="Teleport all users within a region to another region.")
 	@AutoRefPermission(console=false, nodes={"openhouse.coach"})
 
 	public boolean transfer(CommandSender sender, World match, String[] args, CommandLine options)
 	{
-		AutoRefRegion regionFrom, regionTo;
+		RegionData regionFrom, regionTo;
 
 		String regionFromName = args[0].toUpperCase();
 		String regionToName = args[1].toUpperCase();
 
 		if (plugin.regions.containsKey(regionFromName))
-			regionFrom = plugin.regions.get(regionFromName).region;
+			regionFrom = plugin.regions.get(regionFromName);
 		else
 		{
 			sender.sendMessage(ChatColor.RED + "Region " + regionFromName + " does not exist.");
@@ -80,15 +75,21 @@ public class CoachCommands implements CommandHandler
 		}
 
 		if (plugin.regions.containsKey(regionToName))
-			regionTo = plugin.regions.get(regionToName).region;
+			regionTo = plugin.regions.get(regionToName);
 		else
 		{
 			sender.sendMessage(ChatColor.RED + "Region " + regionToName + " does not exist.");
 			return true;
 		}
 
-		Location locationTo = RegionUtil.getRegionCenter(regionTo);
-		for (Player onPlayer : RegionUtil.getPlayersRegion(regionFrom))
+		if (regionFrom.claimant != null && !sender.getName().equals(regionFrom.claimant))
+		{
+			sender.sendMessage(regionFromName + " was claimed by " + regionFrom.claimant);
+			if (options.hasOption('f')) return true;
+		}
+
+		Location locationTo = RegionUtil.getRegionCenter(regionTo.region);
+		for (Player onPlayer : RegionUtil.getPlayersRegion(regionFrom.region))
 		{
 			onPlayer.teleport(locationTo);
 			onPlayer.sendMessage(ChatColor.GREEN + "You have been teleported by " + sender.getName() + ".");
@@ -118,7 +119,7 @@ public class CoachCommands implements CommandHandler
 	}
 
 	@AutoRefCommand(name={"openhouse", "region"}, argmin=1, argmax=1,
-			description="Find out the number of players inside a given region.")
+		description="Find out the number of players inside a given region.")
 	@AutoRefPermission(console=true, nodes={"openhouse.coach"})
 
 	public boolean describeRegion(CommandSender sender, World match, String[] args, CommandLine options)
@@ -143,73 +144,69 @@ public class CoachCommands implements CommandHandler
 		return true;
 	}
 
-	@AutoRefCommand(name={"openhouse", "defregion"}, argmin=1, argmax=1, options="g+",
-			description="Create a new region.")
-	@AutoRefPermission(console=false, nodes={"openhouse.coach"})
-
-	public boolean defineRegion(CommandSender sender, World match, String[] args, CommandLine options)
-	{
-		if (match == null) return false;
-		Player player = (Player) sender;
-
-		WorldEditPlugin worldEdit = plugin.getWorldEdit();
-		if (worldEdit == null)
-		{
-			// world edit not installed
-			sender.sendMessage("This method requires WorldEdit installed and running.");
-			return true;
-		}
-
-		Selection sel = worldEdit.getSelection(player);
-		AutoRefRegion reg = null;
-
-		if ((sel instanceof CuboidSelection))
-		{
-			CuboidSelection csel = (CuboidSelection) sel;
-			reg = new CuboidRegion(csel.getMinimumPoint(), csel.getMaximumPoint());
-		}
-
-		String regionName = args[0].toUpperCase();
-		if (reg != null)
-		{
-			reg.setName(regionName);
-			RegionData rdata = new RegionData(reg);
-
-			if (options.hasOption('g'))
-				rdata.permissions.add("openhouse.group." + options.getOptionValue('g'));
-
-			plugin.regions.put(regionName, rdata);
-			sender.sendMessage(regionName + " is now " + reg);
-		}
-		return true;
-	}
-
-	@AutoRefCommand(name={"openhouse", "bring"}, argmin=1, argmax=1,
+	@AutoRefCommand(name={"openhouse", "bring"}, argmin=1, argmax=1, options="f",
 		description="Teleport all users within a region to you.")
 	@AutoRefPermission(console=false, nodes={"openhouse.coach"})
 
 	public boolean bringPlayers(CommandSender sender, World match, String[] args, CommandLine options)
 	{
 		Player player = (Player) sender;
-		AutoRefRegion regionFrom;
+		RegionData regionFrom;
 
 		String regionName = args[0].toUpperCase();
 		if (plugin.regions.containsKey(regionName))
-			regionFrom = plugin.regions.get(regionName).region;
+			regionFrom = plugin.regions.get(regionName);
 		else
 		{
 			sender.sendMessage(ChatColor.RED + "Region " + regionName + " does not exist.");
 			return true;
 		}
 
+		if (regionFrom.claimant != null && !sender.getName().equals(regionFrom.claimant))
+		{
+			sender.sendMessage("This region was claimed by " + regionFrom.claimant);
+			if (options.hasOption('f')) return true;
+		}
+
 		Location locationTo = player.getLocation();
-		for (Player onPlayer : RegionUtil.getPlayersRegion(regionFrom))
+		for (Player onPlayer : RegionUtil.getPlayersRegion(regionFrom.region))
 		{
 			onPlayer.teleport(locationTo);
 			onPlayer.sendMessage(ChatColor.GREEN + "You have been teleported by " + player.getName() + ".");
 		}
 
 		sender.sendMessage(ChatColor.GREEN + "Players have been teleported from " + regionName + ".");
+
+		return true;
+	}
+
+	@AutoRefCommand(name={"openhouse", "claim"}, argmin=1, argmax=1, options="f",
+		description="Claim a region.")
+	@AutoRefPermission(console=false, nodes={"openhouse.coach"})
+
+	public boolean claimRegion(CommandSender sender, World match, String[] args, CommandLine options)
+	{
+		Player player = (Player) sender;
+		RegionData region;
+
+		String regionName = args[0].toUpperCase();
+		if (plugin.regions.containsKey(regionName))
+			region = plugin.regions.get(regionName);
+		else
+		{
+			sender.sendMessage(ChatColor.RED + "Region " + regionName + " does not exist.");
+			return true;
+		}
+
+		if (region.claimant != null && !sender.getName().equals(region.claimant))
+		{
+			sender.sendMessage("This region was claimed by " + region.claimant);
+			if (options.hasOption('f')) return true;
+		}
+
+		region.claimant = sender.getName();
+		player.teleport(RegionUtil.getRegionCenter(region.region));
+		player.sendMessage("You have claimed " + ChatColor.GREEN + regionName);
 
 		return true;
 	}
