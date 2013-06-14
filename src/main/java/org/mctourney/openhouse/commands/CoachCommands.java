@@ -34,7 +34,7 @@ public class CoachCommands implements CommandHandler
 		this.plugin = plugin;
 	}
 
-	@AutoRefCommand(name={"openhouse", "tp"}, argmin=1, argmax=1,
+	@AutoRefCommand(name={"coach", "tp"}, argmin=1, argmax=1,
 		description="Teleport to the named region.")
 	@AutoRefPermission(console=false, nodes={"openhouse.coach"})
 
@@ -55,7 +55,7 @@ public class CoachCommands implements CommandHandler
 		return true;
 	}
 
-	@AutoRefCommand(name={"openhouse", "transfer"}, argmin=2, argmax=2, options="f",
+	@AutoRefCommand(name={"coach", "transfer"}, argmin=2, argmax=2, options="f",
 		description="Teleport all users within a region to another region.")
 	@AutoRefPermission(console=false, nodes={"openhouse.coach"})
 
@@ -101,7 +101,7 @@ public class CoachCommands implements CommandHandler
 		return true;
 	}
 
-	@AutoRefCommand(name={"openhouse", "regions"}, argmax=0,
+	@AutoRefCommand(name={"coach", "regions"}, argmax=0,
 		description="List all available regions.")
 	@AutoRefPermission(console=true, nodes={"openhouse.coach"})
 
@@ -118,7 +118,7 @@ public class CoachCommands implements CommandHandler
 		return true;
 	}
 
-	@AutoRefCommand(name={"openhouse", "region"}, argmin=1, argmax=1,
+	@AutoRefCommand(name={"coach", "region"}, argmin=1, argmax=1,
 		description="Find out the number of players inside a given region.")
 	@AutoRefPermission(console=true, nodes={"openhouse.coach"})
 
@@ -144,7 +144,7 @@ public class CoachCommands implements CommandHandler
 		return true;
 	}
 
-	@AutoRefCommand(name={"openhouse", "bring"}, argmin=1, argmax=1, options="f",
+	@AutoRefCommand(name={"coach", "bring"}, argmin=1, argmax=1, options="f",
 		description="Teleport all users within a region to you.")
 	@AutoRefPermission(console=false, nodes={"openhouse.coach"})
 
@@ -180,7 +180,7 @@ public class CoachCommands implements CommandHandler
 		return true;
 	}
 
-	@AutoRefCommand(name={"openhouse", "claim"}, argmin=1, argmax=1, options="f",
+	@AutoRefCommand(name={"coach", "claim"}, argmin=1, argmax=1, options="f",
 		description="Claim a region.")
 	@AutoRefPermission(console=false, nodes={"openhouse.coach"})
 
