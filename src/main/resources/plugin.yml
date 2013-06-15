@@ -1,6 +1,6 @@
 name: OpenHouseAdmin
 main: org.mctourney.openhouse.OpenHouseAdmin
-version: 0.4.0
+version: 0.5
 
 depend:
   - AutoReferee
