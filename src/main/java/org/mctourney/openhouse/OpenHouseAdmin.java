@@ -141,7 +141,7 @@ public class OpenHouseAdmin extends JavaPlugin
 
 	public World getLobbyWorld()
 	{
-		return getServer().getWorld("lobby");
+		return AutoReferee.getInstance().getLobbyWorld();
 	}
 
 	// import Worldguard
