@@ -116,7 +116,7 @@ public class LobbyListener implements Listener
 		Block block = event.getClickedBlock();
 		Player player = event.getPlayer();
 
-		if (block.getWorld() == plugin.getLobbyWorld() && block.getState() instanceof Sign)
+		if (event.hasBlock() && block.getWorld() == plugin.getLobbyWorld() && block.getState() instanceof Sign)
 		{
 			String[] lines = ((Sign) block.getState()).getLines();
 			if (lines[0] != null && "[OpenHouse]".equals(ChatColor.stripColor(lines[0].trim())))
@@ -159,10 +159,10 @@ public class LobbyListener implements Listener
 					else player.teleport(RegionUtil.getRegionCenter(rdata.region));
 				}
 			}
-		}
 
-		if (!player.hasPermission("openhouse.coach"))
-			event.setCancelled(true);
+			if (!player.hasPermission("openhouse.coach"))
+				event.setCancelled(true);
+		}
 	}
 
 	@EventHandler(priority=EventPriority.MONITOR)
