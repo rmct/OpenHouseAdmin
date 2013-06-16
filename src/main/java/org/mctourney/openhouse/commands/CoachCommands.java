@@ -117,8 +117,13 @@ public class CoachCommands implements CommandHandler
 			@Override
 			public int compare(RegionData a, RegionData b)
 			{
-				return RegionUtil.getPlayersRegion(a.region).size()
-					- RegionUtil.getPlayersRegion(b.region).size();
+
+				int asize = RegionUtil.getPlayersRegion(a.region).size();
+				int bsize = RegionUtil.getPlayersRegion(b.region).size();
+				if (asize != bsize) return asize - bsize;
+
+				// alphabetical order by default
+				return a.region.getName().compareToIgnoreCase(b.region.getName());
 			}
 		});
 
