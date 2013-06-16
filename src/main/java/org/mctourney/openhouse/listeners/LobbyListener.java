@@ -135,8 +135,11 @@ public class LobbyListener implements Listener
 						if ((regsize = reg.getPlayers().size()) > bestsize)
 						{ bestsize = regsize; aregions = Lists.newArrayList(); }
 
-						aregions.add(reg);
+						// if this region is one of the largest regions, add to the list
+						if (regsize == bestsize) aregions.add(reg);
 					}
+
+					// select a random region from the list of largest regions
 					rdata = aregions.get(RandomUtils.nextInt(aregions.size()));
 				}
 				// teleport back to spawn
