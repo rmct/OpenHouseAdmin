@@ -3,7 +3,6 @@ package org.mctourney.openhouse.util;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -26,7 +25,7 @@ public class RegionUtil
 		Set<Player> players = Sets.newHashSet();
 
 		for (Player onPlayer : Bukkit.getOnlinePlayers())
-			if (onPlayer.getGameMode() == GameMode.ADVENTURE && region.contains(onPlayer.getLocation()))
+			if (!onPlayer.hasPermission("openhouse.coach") && region.contains(onPlayer.getLocation()))
 				players.add(onPlayer);
 
 		return players;
