@@ -1,5 +1,8 @@
 package org.mctourney.openhouse.commands;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 
 import org.bukkit.ChatColor;
@@ -19,6 +22,7 @@ import org.mctourney.openhouse.util.RegionUtil;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang.StringUtils;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 /**
@@ -107,13 +111,27 @@ public class CoachCommands implements CommandHandler
 
 	public boolean listRegions(CommandSender sender, AutoRefMatch match, String[] args, CommandLine options)
 	{
-		Set<String> regionNames = Sets.newHashSet();
+		List<RegionData> regions = Lists.newArrayList(plugin.regions.values());
+		Collections.sort(regions, new Comparator<RegionData>()
+		{
+			@Override
+			public int compare(RegionData a, RegionData b)
+			{
+				return RegionUtil.getPlayersRegion(a.region).size()
+					- RegionUtil.getPlayersRegion(b.region).size();
+			}
+		});
 
-		for (String regname : plugin.regions.keySet())
-			regionNames.add(regname.toUpperCase());
+		sender.sendMessage(ChatColor.GRAY + "Available Regions:");
+		for (RegionData region : regions)
+		{
+			// get the count and color based on whether the region is full
+			int count = region.getPlayers().size();
+			ChatColor color = region.isFull() ? ChatColor.DARK_RED : ChatColor.DARK_GREEN;
 
-		sender.sendMessage(ChatColor.GREEN + "Available Regions: " +
-			ChatColor.WHITE + StringUtils.join(regionNames, ", "));
+			sender.sendMessage(String.format("> %s (%s)",
+				region.region.getName(), "" + color + count + ChatColor.RESET));
+		}
 
 		return true;
 	}
