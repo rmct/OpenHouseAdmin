@@ -64,7 +64,7 @@ public class LobbyListener implements Listener
 	private void updateLocationSign(Location loc)
 	{
 		for (Map.Entry<String, RegionData> e : plugin.regions.entrySet())
-			for (Sign sign : e.getValue().signs) if (sign.getLocation().equals(loc))
+			for (Block sign : e.getValue().signs) if (sign.getLocation().equals(loc))
 				new DeferredSignUpdateTask(e.getKey()).runTask(plugin);
 	}
 
@@ -104,7 +104,7 @@ public class LobbyListener implements Listener
 			{
 				String regname = lines[1].trim().toUpperCase();
 				RegionData rdata = plugin.regions.get(regname);
-				if (rdata != null && rdata.signs.add((Sign) block.getState()))
+				if (rdata != null && rdata.signs.add(block))
 					new DeferredSignUpdateTask(regname).runTask(plugin);
 			}
 		}

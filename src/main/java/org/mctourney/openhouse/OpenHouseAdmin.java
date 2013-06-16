@@ -8,6 +8,7 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -101,7 +102,7 @@ public class OpenHouseAdmin extends JavaPlugin
 				String coords = signelement.getAttributeValue("location");
 				Location location = LocationUtil.fromCoords(lobby, coords);
 				if (location.getBlock().getState() instanceof Sign)
-					rdata.signs.add((Sign) location.getBlock().getState());
+					rdata.signs.add(location.getBlock());
 			}
 
 			for (Element permelement : relement.getChildren("permission"))
@@ -119,7 +120,7 @@ public class OpenHouseAdmin extends JavaPlugin
 			Element regelement = rdata.region.toElement();
 			regionscontainer.addContent(regelement);
 
-			for (Sign sign : rdata.signs)
+			for (Block sign : rdata.signs)
 				regelement.addContent(new Element("sign").setAttribute("location",
 					LocationUtil.toBlockCoords(sign.getLocation())));
 

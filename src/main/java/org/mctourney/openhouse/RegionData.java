@@ -3,6 +3,7 @@ package org.mctourney.openhouse;
 import java.util.Set;
 
 import org.bukkit.ChatColor;
+import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
@@ -20,7 +21,7 @@ public class RegionData
 	public AutoRefRegion region;
 
 	// any signs targetting this region
-	public Set<Sign> signs = Sets.newHashSet();
+	public Set<Block> signs = Sets.newHashSet();
 
 	// any permissions necessary to join this region
 	public Set<String> permissions = Sets.newHashSet();
@@ -58,7 +59,11 @@ public class RegionData
 		String line = color + " " + text.toUpperCase();
 
 		// update all the necessary signs
-		for (Sign sign : signs) { sign.setLine(2, line); sign.update(); }
+		for (Block signb : this.signs)
+		{
+			Sign sign = (Sign) signb.getState();
+			sign.setLine(2, line); sign.update();
+		}
 
 		long time = System.currentTimeMillis();
 
