@@ -200,6 +200,7 @@ public class CoachCommands implements CommandHandler
 
 		sender.sendMessage(ChatColor.GREEN + "Players have been teleported from " + regionName + ".");
 
+		regionFrom.claimant = null;
 		return true;
 	}
 
