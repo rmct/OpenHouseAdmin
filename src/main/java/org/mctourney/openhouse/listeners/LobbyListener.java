@@ -45,8 +45,8 @@ public class LobbyListener implements Listener
 				for (String regname : LobbyListener.this.plugin.regions.keySet())
 					LobbyListener.this.plugin.regions.get(regname).update();
 			}
-		// run a sign update for all signs every 5 seconds
-		}.runTaskTimer(plugin, 0L, 5 * 20L);
+		// run a sign update for all signs every 15 seconds
+		}.runTaskTimer(plugin, 0L, 15 * 20L);
 	}
 
 	private class DeferredSignUpdateTask extends BukkitRunnable

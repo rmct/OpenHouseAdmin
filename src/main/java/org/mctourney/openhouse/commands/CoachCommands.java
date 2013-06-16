@@ -4,10 +4,10 @@ import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import org.mctourney.autoreferee.AutoRefMatch;
 import org.mctourney.autoreferee.regions.AutoRefRegion;
 import org.mctourney.autoreferee.util.commands.AutoRefCommand;
 import org.mctourney.autoreferee.util.commands.AutoRefPermission;
@@ -38,7 +38,7 @@ public class CoachCommands implements CommandHandler
 		description="Teleport to the named region.")
 	@AutoRefPermission(console=false, nodes={"openhouse.coach"})
 
-	public boolean teleport(CommandSender sender, World match, String[] args, CommandLine options)
+	public boolean teleport(CommandSender sender, AutoRefMatch match, String[] args, CommandLine options)
 	{
 		AutoRefRegion regionTo;
 		String regionToName = args[0].toUpperCase();
@@ -59,7 +59,7 @@ public class CoachCommands implements CommandHandler
 		description="Teleport all users within a region to another region.")
 	@AutoRefPermission(console=false, nodes={"openhouse.coach"})
 
-	public boolean transfer(CommandSender sender, World match, String[] args, CommandLine options)
+	public boolean transfer(CommandSender sender, AutoRefMatch match, String[] args, CommandLine options)
 	{
 		RegionData regionFrom, regionTo;
 
@@ -105,7 +105,7 @@ public class CoachCommands implements CommandHandler
 		description="List all available regions.")
 	@AutoRefPermission(console=true, nodes={"openhouse.coach"})
 
-	public boolean listRegions(CommandSender sender, World match, String[] args, CommandLine options)
+	public boolean listRegions(CommandSender sender, AutoRefMatch match, String[] args, CommandLine options)
 	{
 		Set<String> regionNames = Sets.newHashSet();
 
@@ -122,7 +122,7 @@ public class CoachCommands implements CommandHandler
 		description="Find out the number of players inside a given region.")
 	@AutoRefPermission(console=true, nodes={"openhouse.coach"})
 
-	public boolean describeRegion(CommandSender sender, World match, String[] args, CommandLine options)
+	public boolean describeRegion(CommandSender sender, AutoRefMatch match, String[] args, CommandLine options)
 	{
 		try
 		{
@@ -148,7 +148,7 @@ public class CoachCommands implements CommandHandler
 		description="Teleport all users within a region to you.")
 	@AutoRefPermission(console=false, nodes={"openhouse.coach"})
 
-	public boolean bringPlayers(CommandSender sender, World match, String[] args, CommandLine options)
+	public boolean bringPlayers(CommandSender sender, AutoRefMatch match, String[] args, CommandLine options)
 	{
 		Player player = (Player) sender;
 		RegionData regionFrom;
@@ -184,7 +184,7 @@ public class CoachCommands implements CommandHandler
 		description="Claim a region.")
 	@AutoRefPermission(console=false, nodes={"openhouse.coach"})
 
-	public boolean claimRegion(CommandSender sender, World match, String[] args, CommandLine options)
+	public boolean claimRegion(CommandSender sender, AutoRefMatch match, String[] args, CommandLine options)
 	{
 		Player player = (Player) sender;
 		RegionData region;

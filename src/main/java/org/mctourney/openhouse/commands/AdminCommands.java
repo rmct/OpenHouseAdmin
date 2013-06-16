@@ -4,10 +4,10 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import org.mctourney.autoreferee.AutoRefMatch;
 import org.mctourney.autoreferee.regions.AutoRefRegion;
 import org.mctourney.autoreferee.regions.CuboidRegion;
 import org.mctourney.autoreferee.util.commands.AutoRefCommand;
@@ -35,10 +35,10 @@ public class AdminCommands implements CommandHandler
 		description="Create a new region.")
 	@AutoRefPermission(console=false, nodes={"openhouse.admin"})
 
-	public boolean defineRegion(CommandSender sender, World match, String[] args, CommandLine options)
+	public boolean defineRegion(CommandSender sender, AutoRefMatch match, String[] args, CommandLine options)
 	{
-		if (match == null) return false;
 		Player player = (Player) sender;
+		if (player.getWorld() != plugin.getLobbyWorld()) return false;
 
 		WorldEditPlugin worldEdit = plugin.getWorldEdit();
 		if (worldEdit == null)
