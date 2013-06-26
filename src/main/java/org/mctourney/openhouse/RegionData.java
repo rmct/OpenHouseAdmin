@@ -60,6 +60,7 @@ public class RegionData
 
 		// update all the necessary signs
 		for (Block signb : this.signs)
+			if (signb.getState() instanceof Sign)
 		{
 			Sign sign = (Sign) signb.getState();
 			sign.setLine(2, line); sign.update();

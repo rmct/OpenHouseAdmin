@@ -150,7 +150,7 @@ public class LobbyListener implements Listener
 					for (RegionData reg : plugin.regions.values()) if (reg.canJoin(player))
 					{
 						if ((regsize = reg.getPlayers().size()) > bestsize)
-						{ bestsize = regsize; aregions = Lists.newArrayList(); }
+						{ bestsize = regsize; aregions.clear(); }
 
 						// if this region is one of the largest regions, add to the list
 						if (regsize == bestsize) aregions.add(reg);
