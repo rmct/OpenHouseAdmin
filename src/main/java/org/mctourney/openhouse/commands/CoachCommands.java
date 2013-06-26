@@ -150,10 +150,10 @@ public class CoachCommands implements CommandHandler
 		try
 		{
 			String regionName = args[0].toUpperCase();
-			AutoRefRegion region = plugin.regions.get(regionName).region;
+			RegionData region = plugin.regions.get(regionName);
 			Set<String> names = Sets.newHashSet();
 
-			for (Player onPlayer : RegionUtil.getPlayersRegion(region))
+			for (Player onPlayer : region.getPlayers())
 				names.add(onPlayer.getDisplayName());
 
 			sender.sendMessage(String.format(ChatColor.GREEN + "Region %s [%d]: " + ChatColor.RESET + "%s",
@@ -192,7 +192,7 @@ public class CoachCommands implements CommandHandler
 		}
 
 		Location locationTo = player.getLocation();
-		for (Player onPlayer : RegionUtil.getPlayersRegion(regionFrom.region))
+		for (Player onPlayer : regionFrom.getPlayers())
 		{
 			onPlayer.teleport(locationTo);
 			onPlayer.sendMessage(ChatColor.GREEN + "You have been teleported by " + player.getName() + ".");

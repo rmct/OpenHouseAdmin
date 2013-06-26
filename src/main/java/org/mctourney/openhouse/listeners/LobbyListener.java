@@ -1,5 +1,6 @@
 package org.mctourney.openhouse.listeners;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -91,6 +93,21 @@ public class LobbyListener implements Listener
 	public void playerRespawn(PlayerRespawnEvent event)
 	{
 		updateLocationSign(event.getRespawnLocation());
+	}
+
+	@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+	public void blockBreak(BlockBreakEvent event)
+	{
+		if (event.getBlock().getWorld() == plugin.getLobbyWorld())
+			for (RegionData reg : plugin.regions.values())
+		{
+			Iterator<Block> iter = reg.signs.iterator();
+			while (iter.hasNext())
+			{
+				Block block = iter.next();
+				if (!(block.getState() instanceof Sign)) iter.remove();
+			}
+		}
 	}
 
 	@EventHandler(priority=EventPriority.MONITOR)
