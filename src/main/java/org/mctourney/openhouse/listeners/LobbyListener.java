@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -15,6 +16,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -80,7 +82,33 @@ public class LobbyListener implements Listener
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void playerLogin(PlayerJoinEvent event)
 	{
-		updateLocationSign(event.getPlayer().getLocation());
+		Player player = event.getPlayer();
+		updateLocationSign(player.getLocation());
+
+		if (plugin.isLobbyServer())
+			for (Player p : Bukkit.getOnlinePlayers())
+			{
+				p.hidePlayer(player);
+				player.hidePlayer(p);
+			}
+	}
+
+	@EventHandler(priority=EventPriority.HIGHEST)
+	public void playerChat(PlayerChatEvent event)
+	{
+		Player player = event.getPlayer();
+		if (player.hasPermission("openhouse.chatadmin")) return;
+
+		if (plugin.isLobbyServer()) event.getRecipients().clear();
+		else
+		{
+			RegionData rdata = null;
+			for (RegionData r : plugin.regions.values())
+				if (r.region.contains(player.getLocation())) rdata = r;
+
+			if (rdata == null) event.getRecipients().clear();
+			else event.getRecipients().retainAll(rdata.getPlayers());
+		}
 	}
 
 	@EventHandler(priority=EventPriority.MONITOR)

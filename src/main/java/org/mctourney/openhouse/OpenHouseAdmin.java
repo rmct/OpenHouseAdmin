@@ -3,6 +3,7 @@ package org.mctourney.openhouse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -10,6 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -41,6 +43,8 @@ public class OpenHouseAdmin extends JavaPlugin
 
 	public Map<String, RegionData> regions = Maps.newHashMap();
 
+	protected boolean _isLobbyServer = false;
+
 	// return OpenHouseAdmin singleton
 	public static OpenHouseAdmin getInstance()
 	{ return instance; }
@@ -60,6 +64,14 @@ public class OpenHouseAdmin extends JavaPlugin
 		PluginManager manager = Bukkit.getPluginManager();
 		manager.registerEvents(new LobbyListener(this), this);
 
+		// global configuration object (can't be changed, so don't save onDisable)
+		InputStream configInputStream = getResource("defaults/config.yml");
+		if (configInputStream != null) getConfig().setDefaults(
+			YamlConfiguration.loadConfiguration(configInputStream));
+		getConfig().options().copyDefaults(true); saveConfig();
+
+		_isLobbyServer = getConfig().getBoolean("lobby");
+
 		getLogger().info(this.getDescription().getFullName() + " is enabled");
 	}
 
@@ -69,6 +81,9 @@ public class OpenHouseAdmin extends JavaPlugin
 		if (getLobbyWorld() != null) saveRegions();
 		getLogger().info(this.getDescription().getFullName() + " is disabled");
 	}
+
+	public boolean isLobbyServer()
+	{ return this._isLobbyServer; }
 
 	public File getRegionFile()
 	{ return new File(getLobbyWorld().getWorldFolder(), "regions.xml"); }

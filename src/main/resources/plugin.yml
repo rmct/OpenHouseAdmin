@@ -31,7 +31,13 @@ permissions:
       openhouse.coach: true
   openhouse.streamer:
     default: false
+    children:
+      openhouse.chatadmin: true
   openhouse.coach:
+    default: false
+    children:
+      openhouse.chatadmin: true
+  openhouse.chatadmin:
     default: false
   openhouse.group.*:
     default: false
