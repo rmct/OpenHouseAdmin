@@ -11,13 +11,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import org.mctourney.autoreferee.AutoRefMatch;
-import org.mctourney.autoreferee.regions.AutoRefRegion;
 import org.mctourney.autoreferee.util.commands.AutoRefCommand;
 import org.mctourney.autoreferee.util.commands.AutoRefPermission;
 import org.mctourney.autoreferee.util.commands.CommandHandler;
 import org.mctourney.openhouse.OpenHouseAdmin;
 import org.mctourney.openhouse.RegionData;
-import org.mctourney.openhouse.util.RegionUtil;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang.StringUtils;
@@ -44,18 +42,18 @@ public class CoachCommands implements CommandHandler
 
 	public boolean teleport(CommandSender sender, AutoRefMatch match, String[] args, CommandLine options)
 	{
-		AutoRefRegion regionTo;
-		String regionToName = args[0].toUpperCase();
+		RegionData region;
+		String regionName = args[0].toUpperCase();
 
-		if (plugin.regions.containsKey(regionToName))
-			regionTo = plugin.regions.get(regionToName).region;
+		if (plugin.regions.containsKey(regionName))
+			region = plugin.regions.get(regionName);
 		else
 		{
-			sender.sendMessage(ChatColor.RED + "Region " + regionToName + " does not exist.");
+			sender.sendMessage(ChatColor.RED + "Region " + regionName + " does not exist.");
 			return true;
 		}
 
-		((Player) sender).teleport(RegionUtil.getRegionCenter(regionTo));
+		((Player) sender).teleport(region.getCenter());
 		return true;
 	}
 
@@ -92,8 +90,8 @@ public class CoachCommands implements CommandHandler
 			if (options.hasOption('f')) return true;
 		}
 
-		Location locationTo = RegionUtil.getRegionCenter(regionTo.region);
-		for (Player onPlayer : RegionUtil.getPlayersRegion(regionFrom.region))
+		Location locationTo = regionTo.getCenter();
+		for (Player onPlayer : regionFrom.getPlayers())
 		{
 			onPlayer.teleport(locationTo);
 			onPlayer.sendMessage(ChatColor.GREEN + "You have been teleported by " + sender.getName() + ".");
@@ -117,9 +115,8 @@ public class CoachCommands implements CommandHandler
 			@Override
 			public int compare(RegionData a, RegionData b)
 			{
-
-				int asize = RegionUtil.getPlayersRegion(a.region).size();
-				int bsize = RegionUtil.getPlayersRegion(b.region).size();
+				int asize = a.getPlayers().size();
+				int bsize = b.getPlayers().size();
 				if (asize != bsize) return asize - bsize;
 
 				// alphabetical order by default
@@ -229,7 +226,7 @@ public class CoachCommands implements CommandHandler
 		}
 
 		region.claimant = sender.getName();
-		player.teleport(RegionUtil.getRegionCenter(region.region));
+		player.teleport(region.getCenter());
 		player.sendMessage("You have claimed " + ChatColor.GREEN + regionName);
 
 		return true;

@@ -2,16 +2,24 @@ package org.mctourney.openhouse;
 
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
+
 import org.mctourney.autoreferee.regions.AutoRefRegion;
-import org.mctourney.openhouse.util.RegionUtil;
+import org.mctourney.autoreferee.regions.CuboidRegion;
 
 import com.google.common.collect.Sets;
 
+/*
+ * @author Mustek (previously RegionUtil.java)
+ * @author authorblues
+ */
 public class RegionData
 {
 	private static final int FULL_REGION_SIZE = 8;
@@ -46,6 +54,22 @@ public class RegionData
 		for (String perm : permissions)
 			if (!player.hasPermission(perm)) return false;
 		return true;
+	}
+
+	// Calculate the center of a region and return the location
+	public Location getCenter()
+	{
+		// Get points of the region
+		CuboidRegion cuboid = region.getBoundingCuboid();
+		Location min = cuboid.getMinimumPoint();
+		Location max = cuboid.getMaximumPoint();
+		World world = OpenHouseAdmin.getInstance().getLobbyWorld();
+
+		double pointX = (min.getBlockX() + max.getBlockX()) / 2.0;
+		double pointZ = (min.getBlockZ() + max.getBlockZ()) / 2.0;
+		int pointY = world.getHighestBlockAt((int) pointX, (int) pointZ).getY();
+
+		return new Location(world, pointX, pointY + 1, pointZ);
 	}
 
 	public void update()
@@ -87,8 +111,24 @@ public class RegionData
 		}
 	}
 
+	public Set<Player> getAllPlayers()
+	{
+		Set<Player> players = Sets.newHashSet();
+		for (Player p : Bukkit.getOnlinePlayers())
+			if (region.contains(p.getLocation())) players.add(p);
+		return players;
+	}
+
 	public Set<Player> getPlayers()
-	{ return RegionUtil.getPlayersRegion(this.region); }
+	{
+		Set<Player> players = Sets.newHashSet();
+		for (Player p : Bukkit.getOnlinePlayers())
+		{
+			boolean iscoach = p.hasPermission("openhouse.coach");
+			if (!iscoach && region.contains(p.getLocation())) players.add(p);
+		}
+		return players;
+	}
 
 	public boolean isFull()
 	{ return getPlayers().size() >= FULL_REGION_SIZE; }

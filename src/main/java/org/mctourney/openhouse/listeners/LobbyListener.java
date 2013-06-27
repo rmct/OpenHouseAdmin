@@ -29,7 +29,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.mctourney.autoreferee.regions.AutoRefRegion;
 import org.mctourney.openhouse.OpenHouseAdmin;
 import org.mctourney.openhouse.RegionData;
-import org.mctourney.openhouse.util.RegionUtil;
 
 import org.apache.commons.lang.math.RandomUtils;
 
@@ -98,7 +97,8 @@ public class LobbyListener implements Listener
 	public void playerChat(PlayerChatEvent event)
 	{
 		Player player = event.getPlayer();
-		if (player.hasPermission("openhouse.chatadmin")) return;
+		if (player.getWorld() != plugin.getLobbyWorld()
+			|| player.hasPermission("openhouse.chatadmin")) return;
 
 		if (plugin.isLobbyServer()) event.getRecipients().clear();
 		else
@@ -108,7 +108,7 @@ public class LobbyListener implements Listener
 				if (r.region.contains(player.getLocation())) rdata = r;
 
 			if (rdata == null) event.getRecipients().clear();
-			else event.getRecipients().retainAll(rdata.getPlayers());
+			else event.getRecipients().retainAll(rdata.getAllPlayers());
 		}
 	}
 
@@ -205,7 +205,7 @@ public class LobbyListener implements Listener
 				{
 					if (!rdata.canJoin(player)) player.sendMessage(
 						ChatColor.RED + "You do not have permission to join this region!");
-					else player.teleport(RegionUtil.getRegionCenter(rdata.region));
+					else player.teleport(rdata.getCenter());
 				}
 			}
 
