@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -216,12 +217,17 @@ public class LobbyListener implements Listener
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void playerMove(PlayerMoveEvent event)
 	{
-		Location to = event.getTo(), fm = event.getPlayer().getLocation();
+		Player player = event.getPlayer();
+		Location to = event.getTo(), fm = player.getLocation();
 		for (Map.Entry<String, RegionData> e : plugin.regions.entrySet())
 		{
 			AutoRefRegion reg = e.getValue().region;
 			if (reg.contains(fm) != reg.contains(to))
 				new DeferredSignUpdateTask(e.getKey()).runTask(plugin);
 		}
+
+		// cheap trick to disable flight for non-coaches in the lobby (fighting with AutoReferee)
+		if (fm.getWorld() == plugin.getLobbyWorld() && player.getGameMode() != GameMode.CREATIVE && player.isFlying()
+			&& !player.hasPermission("openhouse.coach")) player.setAllowFlight(false);
 	}
 }
