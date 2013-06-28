@@ -164,40 +164,52 @@ public class CoachCommands implements CommandHandler
 		return true;
 	}
 
-	@AutoRefCommand(name={"coach", "bring"}, argmin=1, argmax=1, options="f",
+	@AutoRefCommand(name={"coach", "bring"}, argmin=0, argmax=1, options="f",
 		description="Teleport all users within a region to you.")
 	@AutoRefPermission(console=false, nodes={"openhouse.coach"})
 
 	public boolean bringPlayers(CommandSender sender, AutoRefMatch match, String[] args, CommandLine options)
 	{
 		Player player = (Player) sender;
-		RegionData regionFrom;
+		RegionData region;
+		Set<Player> players;
 
-		String regionName = args[0].toUpperCase();
-		if (plugin.regions.containsKey(regionName))
-			regionFrom = plugin.regions.get(regionName);
+		// no args and
+		if (args.length == 0)
+		{
+			if (player.getWorld() == plugin.getLobbyWorld()) return false;
+			players = Sets.newHashSet(player.getWorld().getPlayers());
+		}
 		else
 		{
-			sender.sendMessage(ChatColor.RED + "Region " + regionName + " does not exist.");
-			return true;
-		}
+			String regionname = args[0].toUpperCase();
+			if (plugin.regions.containsKey(regionname))
+			{
+				region = plugin.regions.get(regionname);
+				players = region.getPlayers();
+			}
+			else
+			{
+				sender.sendMessage(ChatColor.RED + "Region " + regionname + " does not exist.");
+				return true;
+			}
 
-		if (regionFrom.claimant != null && !sender.getName().equals(regionFrom.claimant))
-		{
-			sender.sendMessage("This region was claimed by " + regionFrom.claimant);
-			if (options.hasOption('f')) return true;
+			if (region.claimant != null && !sender.getName().equals(region.claimant))
+			{
+				sender.sendMessage("This region was claimed by " + region.claimant);
+				if (options.hasOption('f')) return true;
+			}
+			region.claimant = null;
 		}
 
 		Location locationTo = player.getLocation();
-		for (Player onPlayer : regionFrom.getPlayers())
+		for (Player onPlayer : players)
 		{
 			onPlayer.teleport(locationTo);
 			onPlayer.sendMessage(ChatColor.GREEN + "You have been teleported by " + player.getName() + ".");
 		}
 
-		sender.sendMessage(ChatColor.GREEN + "Players have been teleported from " + regionName + ".");
-
-		regionFrom.claimant = null;
+		sender.sendMessage(ChatColor.GREEN + "You have teleported " + players.size() + " player(s).");
 		return true;
 	}
 
