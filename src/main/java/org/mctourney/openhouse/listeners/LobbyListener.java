@@ -99,8 +99,7 @@ public class LobbyListener implements Listener
 	public void playerChat(PlayerChatEvent event)
 	{
 		Player player = event.getPlayer();
-		if (player.getWorld() != plugin.getLobbyWorld()
-			|| player.hasPermission("openhouse.chatadmin")) return;
+		if (player.getWorld() != plugin.getLobbyWorld()) return;
 
 		if (plugin.isLobbyServer()) event.getRecipients().clear();
 		else
@@ -109,8 +108,9 @@ public class LobbyListener implements Listener
 			for (RegionData r : plugin.regions.values())
 				if (r.region.contains(player.getLocation())) rdata = r;
 
-			if (rdata == null) event.getRecipients().clear();
-			else event.getRecipients().retainAll(rdata.getAllPlayers());
+			if (rdata != null) event.getRecipients().retainAll(rdata.getAllPlayers());
+			else if (!player.hasPermission("openhouse.chatadmin"))
+				event.getRecipients().clear();
 		}
 	}
 
