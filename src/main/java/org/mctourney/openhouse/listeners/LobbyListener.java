@@ -41,6 +41,8 @@ public class LobbyListener implements Listener
 	public LobbyListener(OpenHouseAdmin plugin)
 	{
 		this.plugin = plugin;
+		int updatespeed = plugin.getConfig().getInt("sign-update-interval", 15);
+
 		new BukkitRunnable()
 		{
 			@Override
@@ -49,8 +51,8 @@ public class LobbyListener implements Listener
 				for (String regname : LobbyListener.this.plugin.regions.keySet())
 					LobbyListener.this.plugin.regions.get(regname).update();
 			}
-		// run a sign update for all signs every 15 seconds
-		}.runTaskTimer(plugin, 0L, 15 * 20L);
+		// run a sign update for all signs every so many seconds (default 15)
+		}.runTaskTimer(plugin, 0L, updatespeed * 20L);
 	}
 
 	private class DeferredSignUpdateTask extends BukkitRunnable
