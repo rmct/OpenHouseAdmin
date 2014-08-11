@@ -150,8 +150,13 @@ public class LobbyListener implements Listener
 			String[] lines = event.getLines();
 			if (lines[0] != null && "[OpenHouse]".equals(ChatColor.stripColor(lines[0].trim())))
 			{
-				String regname = lines[1].trim().toUpperCase();
+				String regname = ChatColor.stripColor(lines[1].trim().toUpperCase());
 				RegionData rdata = plugin.regions.get(regname);
+
+				// update lines with colors if they are the right command
+				if ("@BACK".equals(regname)) event.setLine(1, ChatColor.BLUE + "@BACK" + ChatColor.RESET);
+				else if ("@ANY".equals(regname)) event.setLine(1, ChatColor.RED + "@ANY" + ChatColor.RESET);
+
 				if (rdata != null && rdata.signs.add(block))
 					new DeferredSignUpdateTask(regname).runTask(plugin);
 			}
