@@ -234,7 +234,8 @@ public class CoachCommands implements CommandHandler
 		if (region.claimant != null && !sender.getName().equals(region.claimant))
 		{
 			sender.sendMessage("This region was claimed by " + region.claimant);
-			if (options.hasOption('f')) return true;
+			sender.sendMessage("Add flag '-f' to override existing claim.");
+			if (!options.hasOption('f')) return true;
 		}
 
 		region.claimant = sender.getName();
