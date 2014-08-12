@@ -174,7 +174,7 @@ public class LobbyListener implements Listener
 			String[] lines = ((Sign) block.getState()).getLines();
 			if (lines[0] != null && "[OpenHouse]".equals(ChatColor.stripColor(lines[0].trim())))
 			{
-				String regname = lines[1].trim().toUpperCase();
+				String regname = ChatColor.stripColor(lines[1].trim().toUpperCase());
 				RegionData rdata = null;
 
 				// teleport to the largest, non-full region
